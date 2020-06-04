@@ -24,7 +24,12 @@ func Register(c *gin.Context) {
 
 	log.Println("user : ", user)
 	// userID, err := models.CreateUser(job)
-	userID := 1
+	flag := models.CheckUser(user)
+	if flag == true {
+		c.JSON(http.StatusOK, gin.H{"status": "Error", "msg": "user already exist"})
+	}
+
+	userID, err := models.CreateUser(user)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "Error"})
@@ -44,13 +49,16 @@ func LogIN(c *gin.Context) {
 		log.Println("error parsing page " + err.Error())
 	}
 
-	log.Println("user : ", user)
-	// userID, err := models.GetJob(job)
-	userID := 1
-
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "Error"})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"status": "ok", "userID": userID})
+	flag1 := models.CheckUser(user)
+	if flag1 == false {
+		c.JSON(http.StatusOK, gin.H{"status": "Error", "msg": "user not exist"})
 	}
+
+	flag2, user := models.GetUser(user)
+	if flag2 == false {
+		c.JSON(http.StatusOK, gin.H{"status": "Error", "msg": "passwoed not match"})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "msg": "welcome", "userID": user.ID})
+
 }
