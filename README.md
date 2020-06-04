@@ -23,8 +23,9 @@ To start this API, use:
 go run main.go
 ```
 
-##Setup database:
-
+## Setup database:
+Sql query for creating database is provided in db folder, And also, if needed db dump is provided in dump folder inside db.
+(psql)
 
 ## End points of API
 
@@ -46,5 +47,3 @@ Body:
 	"password":"abc"
 }
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
