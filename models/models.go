@@ -17,13 +17,13 @@ type User struct {
 func CreateUser(user User) (int, error) {
 	db := config.GetDB()
 
-	rows := db.QueryRow("INSERT INTO account(username,email,password) RETURNING user_id"+user.Name, user.Email, user.Password)
+	rows := db.QueryRow("INSERT INTO account(username,email,password) returning user_id"+user.Name, user.Email, user.Password)
 
 	var userID int
 	err := rows.Scan(&userID)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Error in CreateUser", err.Error())
 	}
 	return userID, err
 }
@@ -41,7 +41,7 @@ func GetUser(user User) (bool, User) {
 	err := rows.Scan(&userID, &name, &password)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Error in GetUser", err.Error())
 	}
 	var flag bool
 	if password == user.Password {
@@ -58,14 +58,14 @@ func GetUser(user User) (bool, User) {
 func CheckUser(user User) bool {
 	db := config.GetDB()
 
-	rows := db.QueryRow("SELECT count(*) from account where email = " + user.Email)
+	rows := db.QueryRow("SELECT count(*) from account where email = $1" + user.Email)
 
 	var count int
 
 	err := rows.Scan(&count)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Error in CheckUser", err.Error())
 	}
 	var flag bool
 	if count > 0 {
