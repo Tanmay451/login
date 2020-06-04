@@ -12,7 +12,8 @@ func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	gin.SetMode(os.Getenv("GIN_MODE"))
 
-	router.GET("/", controllers.LogIN)
+	router.GET("/", controllers.Register)
+	router.GET("/login", controllers.LogIN)
 
 	// router.NoRoute(controllers.PageNotFound)
 
