@@ -17,10 +17,11 @@ type User struct {
 func CreateUser(user User) (int, error) {
 	db := config.GetDB()
 
-	rows := db.QueryRow("INSERT INTO account(username,email,password) returning user_id"+user.Name, user.Email, user.Password)
+	sqlInsert := `INSERT INTO account(username,email,password) VALUES($1,$2,$3) returning user_id`
 
 	var userID int
-	err := rows.Scan(&userID)
+
+	err := db.QueryRow(sqlInsert, user.Name, user.Email, user.Password).Scan(&userID)
 
 	if err != nil {
 		log.Println("Error in CreateUser", err.Error())
@@ -32,13 +33,14 @@ func CreateUser(user User) (int, error) {
 func GetUser(user User) (bool, User) {
 	db := config.GetDB()
 
-	rows := db.QueryRow("SELECT user_id, name, password from account where email = " + user.Email)
+	// rows := db.QueryRow("SELECT user_id, name, password from account where email = " + user.Email)
+	sqlInsert := `SELECT user_id, username, password from account where email = $1`
 
 	var userID int64
 	var name string
 	var password string
 
-	err := rows.Scan(&userID, &name, &password)
+	err := db.QueryRow(sqlInsert, user.Email).Scan(&userID, &name, &password)
 
 	if err != nil {
 		log.Println("Error in GetUser", err.Error())
@@ -58,11 +60,13 @@ func GetUser(user User) (bool, User) {
 func CheckUser(user User) bool {
 	db := config.GetDB()
 
-	rows := db.QueryRow("SELECT count(*) from account where email = $1" + user.Email)
+	// rows := db.QueryRow("SELECT count(*) from account where email = $1;" + user.Email)
 
 	var count int
 
-	err := rows.Scan(&count)
+	sqlInsert := `SELECT count(*) from account where email = $1;`
+
+	err := db.QueryRow(sqlInsert, user.Email).Scan(&count)
 
 	if err != nil {
 		log.Println("Error in CheckUser", err.Error())
